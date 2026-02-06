@@ -82,6 +82,21 @@ async def shutdown_event():
 # Prometheus Metrics
 app.mount("/metrics", make_asgi_app())
 
+# Mount Static Files
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# Ensure static directory exists
+import os
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.isdir(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+    @app.get("/")
+    async def serve_ui():
+        return FileResponse(os.path.join(static_dir, "index.html"))
+
+
 # App Routes
 app.include_router(router)
 

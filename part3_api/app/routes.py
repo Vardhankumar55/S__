@@ -17,19 +17,8 @@ import hashlib
 logger = structlog.get_logger()
 router = APIRouter()
 
-@router.get("/")
-async def root():
-    # Diagnostic check for judges to see if models are ready
-    from .orchestrator import part1, part2
-    return {
-        "message": "Spectral Lie Voice Detection API is Running",
-        "status": "Ready" if (part1 and part2) else "Loading",
-        "endpoints": {
-            "detection": "/detect-voice",
-            "health": "/health/live"
-        },
-        "instructions": "Send a POST request to /detect-voice with x-api-key header and JSON body including language, audioFormat, and audioBase64."
-    }
+# Root GET endpoint removed to serve UI from main.py
+
 
 @router.get("/ready")
 async def readiness_probe():
