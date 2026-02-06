@@ -103,16 +103,16 @@ async def detect_voice_endpoint(
         # Wrap in timeout to prevent hanging beyond Render's limits
         import asyncio
         try:
-            # 25 second timeout - Render has 30s limit, this gives 5s buffer for overhead
-            # Render's single-core CPU is slow - local test showed 2s, Render needs ~15-20s
+            # 60 second timeout - Render has 100s limit for HTTP, this gives buffer
+            # Render's single-core CPU is slow
             result = await asyncio.wait_for(
                 run_in_threadpool(detect_voice, req.audioBase64, req.language, request_id),
-                timeout=25.0
+                timeout=60.0
             )
         except asyncio.TimeoutError:
-            log.error("request_timeout", request_id=request_id, timeout_seconds=25)
+            log.error("request_timeout", request_id=request_id, timeout_seconds=60)
             metrics.ERRORS_TOTAL.labels(type="TimeoutError").inc()
-            raise HTTPException(status_code=408, detail="Request processing timeout - audio too long or server overloaded")
+            raise HTTPException(status_code=408, detail="Request processing timeout (60s) - audio too long or server overloaded")
         
         duration = time.time() - start_time
         

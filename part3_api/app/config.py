@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     API_KEY_HEADER: str = "x-api-key"
     # In production, this should be a list or loaded from a secure store
     # For buildathon, we accept a single key or a comma-separated list
-    API_KEYS: str = "test-key-123" 
+    API_KEYS: str = "test-key-123,demo-key" 
     
     # Redis (optional - for caching only)
     # Default to empty to prevent connection attempts when not configured
