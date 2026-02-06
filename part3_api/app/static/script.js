@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultArea = document.getElementById('result-area');
     const resultCard = document.getElementById('result-card');
     const resetBtn = document.getElementById('reset-btn');
-    
+
     // UI Elements for updates
     const statusText = document.getElementById('status-text');
     const verdictText = document.getElementById('verdict-text');
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const explanationText = document.getElementById('explanation-text');
 
     // === Event Listeners ===
-    
+
     // Click to upload
     uploadBox.addEventListener('click', () => fileInput.click());
 
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle File Drop
     uploadBox.addEventListener('drop', handleDrop, false);
-    
+
     // Handle File Select
     fileInput.addEventListener('change', handleFiles, false);
 
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Switch UI to processing state
         uploadArea.classList.add('hidden');
         processingArea.classList.remove('hidden');
-        
+
         // Simulating different statuses for UX
         const stages = [
             "Analyzing Waveform Structure...",
@@ -78,10 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
             "Running Neural Inference...",
             "Calibrating Confidence Score..."
         ];
-        
+
         let step = 0;
         const statusInterval = setInterval(() => {
-            if(step < stages.length) {
+            if (step < stages.length) {
                 statusText.innerText = stages[step];
                 step++;
             }
@@ -89,12 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Process File
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const base64Audio = e.target.result.split(',')[1];
             sendToAPI(base64Audio, file.name);
             clearInterval(statusInterval);
         };
-        reader.onerror = function() {
+        reader.onerror = function () {
             clearInterval(statusInterval);
             showError("Failed to read file");
         };
@@ -117,7 +117,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                throw new Error(`Server Error: ${response.status}`);
+                let errorMsg = `Server Error: ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    if (errorData.detail) errorMsg += ` - ${errorData.detail}`;
+                    if (errorData.error_message) errorMsg += ` (${errorData.error_message})`;
+                } catch (e) {
+                    // Ignore JSON parse error if body is empty
+                }
+                throw new Error(errorMsg);
             }
 
             const data = await response.json();
@@ -125,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error(error);
-            showError("Analysis Failed. Server might be busy.");
+            showError(error.message || "Analysis Failed. Server might be busy.");
         }
     }
 
@@ -141,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultCard.classList.add(isReal ? 'real' : 'fake');
 
         verdictText.innerText = isReal ? "GENUINE HUMAN AUDIO" : "DEEPFAKE DETECTED";
-        
+
         // Format confidence: 0.9823 -> 98.2%
         const confPercent = (data.confidence * 100).toFixed(1);
         confidenceScore.innerText = `${confPercent}% CONFIDENCE`;
@@ -154,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultArea.classList.remove('hidden');
         resultCard.classList.remove('real', 'fake');
         resultCard.classList.add('error');
-        
+
         verdictText.innerText = "ERROR";
         confidenceScore.innerText = "";
         explanationText.innerText = msg;

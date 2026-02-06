@@ -7,8 +7,9 @@ MAX_DURATION_SECONDS = 30.0
 MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024  # 5 MB
 
 # Paths
+import tempfile
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMP_DIR = os.path.join(os.path.dirname(BASE_DIR), "temp_audio")
+TEMP_DIR = tempfile.gettempdir()
 
 # Feature Extraction
 # CRITICAL: Default to False to avoid loading heavy wav2vec2 model
