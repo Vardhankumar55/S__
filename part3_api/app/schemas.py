@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict, AliasChoices
+from pydantic import BaseModel, Field, ConfigDict, AliasChoices, field_validator
 from typing import Optional
 
 class DetectRequest(BaseModel):
