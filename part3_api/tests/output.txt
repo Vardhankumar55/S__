@@ -1,0 +1,46 @@
+=== AUTOMATED OUTPUTS ===
+
+[input 2 Output]
+{
+  "status": "success",
+  "language": "hindi",
+  "classification": "HUMAN",
+  "confidenceScore": 0.9402,
+  "explanation": "Natural prosody detected.\nNo artifacts observed in high frequencies.\nConsistent background noise profile."
+}
+
+[input 3 Output]
+{
+  "status": "success",
+  "language": "English",
+  "classification": "AI_GENERATED",
+  "confidenceScore": 0.9366,
+  "explanation": "Unnatural pitch consistency in English speech.\nRobotic vocal patterns detected.\nDigital artifacts present in spectral analysis."
+}
+
+[input 4 Output]
+{
+  "status": "success",
+  "language": "English",
+  "classification": "HUMAN",
+  "confidenceScore": 0.9242,
+  "explanation": "Natural prosody detected.\nNo artifacts observed in high frequencies.\nConsistent background noise profile."
+}
+
+[input 5 Output]
+{
+  "status": "success",
+  "language": "English",
+  "classification": "AI_GENERATED",
+  "confidenceScore": 0.9098,
+  "explanation": "Unnatural pitch consistency in English speech.\nRobotic vocal patterns detected.\nDigital artifacts present in spectral analysis."
+}
+
+[input 6 Output]
+{
+  "status": "success",
+  "language": "English",
+  "classification": "AI_GENERATED",
+  "confidenceScore": 0.9442,
+  "explanation": "Unnatural pitch consistency in English speech.\nRobotic vocal patterns detected.\nDigital artifacts present in spectral analysis."
+}

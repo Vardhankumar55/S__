@@ -12,6 +12,7 @@ import traceback
 
 from .config import settings
 from .routes import router
+from .errors import AppError
 
 # Simple Structlog Config
 structlog.configure(
@@ -100,6 +101,32 @@ if os.path.isdir(static_dir):
 # App Routes
 app.include_router(router)
 
+from fastapi.exceptions import RequestValidationError
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    # Flatten errors to a single message string
+    error_messages = []
+    for error in exc.errors():
+        field = error.get("loc", ["unknown"])[-1]
+        msg = error.get("msg", "Invalid value")
+        error_messages.append(f"{field}: {msg}")
+        
+    return JSONResponse(
+        status_code=422,
+        content={
+            "status": "error",
+            "message": "Malformed request: " + "; ".join(error_messages)
+        }
+    )
+
+@app.exception_handler(AppError)
+async def app_error_handler(request: Request, exc: AppError):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"status": "error", "message": exc.message}
+    )
+
 # Robust Error Handler
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
@@ -115,14 +142,13 @@ async def global_exception_handler(request: Request, exc: Exception):
     if isinstance(exc, HTTPException):
         return JSONResponse(
             status_code=exc.status_code,
-            content={"detail": exc.detail}
+            content={"status": "error", "message": exc.detail}
         )
         
     return JSONResponse(
         status_code=500,
         content={
-            "detail": "Internal Server Error", 
-            "error_type": exc.__class__.__name__,
-            "error_message": str(exc)
+            "status": "error",
+            "message": "Internal Server Error"
         }
     )

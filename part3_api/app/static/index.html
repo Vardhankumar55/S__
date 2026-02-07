@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spectral Lie | AI Voice Detector</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
     <div class="background-globes">
         <div class="globe globe-1"></div>
@@ -28,10 +32,13 @@
                 <input type="file" id="audio-input" accept="audio/*" hidden>
                 <div class="icon-container">
                     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 16L12 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M9 11L12 8 15 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M8 16H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M12 16L12 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path d="M9 11L12 8 15 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M8 16H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <path
+                            d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                     </svg>
                 </div>
                 <h2>Analyze Audio Source</h2>
@@ -40,11 +47,39 @@
             </div>
         </section>
 
+        <section class="upload-section" id="base64-upload-area">
+            <div class="glass-panel upload-box">
+                <h2>Analyze Audio Source</h2>
+
+                <div class="input-group">
+                    <label for="language-select">Language:</label>
+                    <select id="language-select" class="dropdown">
+                        <option value="Tamil">Tamil</option>
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="Malayalam">Malayalam</option>
+                        <option value="Telugu">Telugu</option>
+                    </select>
+                </div>
+
+                <p>Paste Base64 encoded audio (or JSON object) below</p>
+                <textarea id="base64-input"
+                    placeholder='Paste base64 string... OR {"language": "Tamil", "audioBase64": "..."}' rows="8"
+                    class="text-input"></textarea>
+                <br>
+                <button id="analyze-btn" class="action-btn">Analyze Audio (MP3)</button>
+            </div>
+        </section>
+
         <section class="processing-section hidden" id="processing-area">
             <div class="glass-panel status-box">
                 <div class="scanner-line"></div>
                 <div class="waveform-viz">
-                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
                 </div>
                 <h3 id="status-text">Extracting Spectral Features...</h3>
             </div>
@@ -56,12 +91,13 @@
                     <span class="label">ANALYSIS COMPLETE</span>
                     <span class="confidence" id="confidence-score">98.2% CONFIDENCE</span>
                 </div>
-                
+
                 <h1 class="verdict-title" id="verdict-text">DEEPFAKE DETECTED</h1>
-                
+
                 <div class="explanation-box">
                     <h4><span class="icon">🔍</span> Forensic Analysis</h4>
-                    <p id="explanation-text">The audio exhibits consistent spectral flattening frequencies typical of TTS synthesis engines (Tactotron/VITS). Lack of natural breath micro-tremors detected.</p>
+                    <p id="explanation-text">The audio exhibits consistent spectral flattening frequencies typical of
+                        TTS synthesis engines (Tactotron/VITS). Lack of natural breath micro-tremors detected.</p>
                 </div>
 
                 <button class="reset-btn" id="reset-btn">Analyze New File</button>
@@ -75,4 +111,5 @@
 
     <script src="/static/script.js"></script>
 </body>
+
 </html>

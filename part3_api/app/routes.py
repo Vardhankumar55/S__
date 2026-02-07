@@ -123,33 +123,40 @@ async def detect_voice_endpoint(
         log.info("request_completed", duration_seconds=duration, classification=result["classification"])
         
         # Cache storing (5 minutes)
-        if rate_limiter.redis_conn:
-            try:
-                await rate_limiter.redis_conn.set(cache_key, json.dumps(result), ex=300)
-            except Exception as e:
-                log.warning("cache_store_failed", error=str(e))
-                
+        # Truncate explanation to max 3 lines as requested
+        explanation_lines = result["explanation"].split('\n')
+        final_explanation = '\n'.join(explanation_lines[:3])
+
         return DetectResponse(
-            classification=result["classification"],
-            confidence=result["confidence"],
-            explanation=result["explanation"],
-            model_version=result["model_version"],
-            request_id=request_id
+            status="success",
+            language=req.language,
+            classification="AI_GENERATED" if result["classification"].lower() == "fake" else "HUMAN",
+            confidenceScore=result["confidence"],
+            explanation=final_explanation,
         )
 
     except RateLimitExceeded:
         metrics.RATE_LIMIT_HITS.inc()
-        raise HTTPException(status_code=429, detail="Rate limit exceeded")
+        return JSONResponse(
+            status_code=429,
+            content={"status": "error", "message": "Rate limit exceeded"}
+        )
         
     except AppError as e:
         metrics.ERRORS_TOTAL.labels(type=e.__class__.__name__).inc()
         log.error("application_error", error=str(e))
-        raise HTTPException(status_code=e.status_code, detail=e.message)
+        return JSONResponse(
+            status_code=e.status_code,
+            content={"status": "error", "message": e.message}
+        )
         
     except Exception as e:
         metrics.ERRORS_TOTAL.labels(type="UnhandledException").inc()
         log.error("unhandled_error", error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": "Internal Server Error"}
+        )
 
 @router.get("/health/live")
 async def liveness():

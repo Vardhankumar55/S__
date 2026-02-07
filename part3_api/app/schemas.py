@@ -6,27 +6,46 @@ class DetectRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     # This ensures we can use either the field name OR the alias for validation
     
+
     audioBase64: str = Field(
         ..., 
         validation_alias=AliasChoices("audioBase64", "audio_base_64"),
         description="The base64 encoded audio data.",
         example="SUQzBAAAAAAAI1..."
     )
+    # Strict validation for Supported Languages
     language: str = Field(
         ..., 
-        description="The language of the audio (e.g., 'English', 'Hindi').",
-        example="English"
+        pattern="^(Tamil|English|Hindi|Malayalam|Telugu)$",
+        description="The language of the audio (Tamil, English, Hindi, Malayalam, Telugu).Case-sensitive.",
+        example="Tamil"
     )
+    # Strict validation for Audio Format
     audioFormat: str = Field(
         "mp3",
+        pattern="^mp3$",
         validation_alias=AliasChoices("audioFormat", "audio_format"),
-        description="The format of the audio (e.g., 'mp3', 'wav').",
+        description="The format of the audio (Always 'mp3').",
         example="mp3"
     )
+    
+    @field_validator('language')
+    @classmethod
+    def validate_language(cls, v: str) -> str:
+        if v not in ["Tamil", "English", "Hindi", "Malayalam", "Telugu"]:
+             raise ValueError("Language must be one of: Tamil, English, Hindi, Malayalam, Telugu")
+        return v
+
+    @field_validator('audioFormat')
+    @classmethod
+    def validate_audio_format(cls, v: str) -> str:
+        if v.lower() != "mp3":
+            raise ValueError("audioFormat must be 'mp3'")
+        return "mp3"
 
 class DetectResponse(BaseModel):
-    classification: str = Field(..., description="Prediction: 'Human' or 'AI-Generated'")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence score (0.0 to 1.0)")
-    explanation: str = Field(..., description="Human-readable explanation of the decision")
-    model_version: str = Field("v1.0", description="Version of the detection model")
-    request_id: str = Field(..., description="Unique ID for this request")
+    status: str = Field("success", description="Status of the request (success/error)")
+    language: str = Field(..., description="Language of the analyzed audio")
+    classification: str = Field(..., description="Prediction: 'Human' or 'AI_GENERATED'")
+    confidenceScore: float = Field(..., ge=0.0, le=1.0, description="Confidence score (0.0 to 1.0)")
+    explanation: str = Field(..., description="Human-readable explanation (max 3 lines)")
